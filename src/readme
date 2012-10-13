@@ -1,0 +1,22 @@
+Q.mobi框架
+使用ajax.js作为ajax请求库
+使用DomUtil进行简单的Dom操作
+display包里为quark基础渲染类，可实现图片和文本的显示
+ext包里为基于quark的显示对象扩展和网络，dom等操作类
+utils为事件处理，计时器Timer和viewprot适配 Map扩展等辅助工具
+
+quarkjs里移除的方法有
+Quark.getDOM();
+Quark.createDOM();
+detectBrowser();
+Quark.getElementOffset();
+Quark.createDOMDrawable();
+Quark.getUrlParams();
+
+Quark.cacheObject();
+Stage.prototype.updatePosition();
+
+不稳定的地方
+DisplayObject.prototype.getConcatenatedMatrix();
+
+DisplayObjectContainer.prototype.sortChildren();
