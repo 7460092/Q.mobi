@@ -9,82 +9,80 @@
     <meta http-equiv="Cache-Control" content="no-cache">
     <meta id="screenOri" name="screen-orientation" content="landscape" />
     <meta name="viewport">
-    <title>Q.mobi测试-位图</title>
-    <style type="text/css">
-        <!--
-        body {
-            background-color: #000000;
-            padding: 0;
-            margin: 0;
-        }
-        body,html{height: 100%;}
-        #outer {
-            height: 100%;
-            overflow: hidden;
-            position: relative;
-            width: 100%;
-        }
-        div {
-            -moz-user-select:none;
-            -webkit-user-select:none;
-            -user-select:none;
-        }
-        #outer[id]{
-            display: table;
-            position: static;
-        }
-        #middle{
-            position: absolute; top: 50%;
-        }
-        #middle[id]{
-            display: table-cell;
-            vertical-align: middle;
-            position: static;
-        }
-        #container{
-            position: relative;
-            top: -50%;
-            margin: 0 auto;
-            background-color:#000000;
-        }
-        -->
-    </style>
+    <title>Q.mobi测试-按钮事件</title>
     <script type="text/javascript" src="src/display/Base.js"></script>
     <script type="text/javascript" src="src/display/DisplayObject.js"></script>
     <script type="text/javascript" src="src/display/DisplayObjectContainer.js"></script>
     <script type="text/javascript" src="src/display/Stage.js"></script>
     <script type="text/javascript" src="src/display/CanvasContext.js"></script>
     <script type="text/javascript" src="src/display/Bitmap.js"></script>
+    <script type="text/javascript" src="src/display/Matrix2D.js"></script>
     <script type="text/javascript" src="src/display/Text.js"></script>
     <script type="text/javascript" src="src/utils/DomUtil.js"></script>
     <script type="text/javascript" src="src/utils/Ticker.js"></script>
+    <script type="text/javascript" src="src/utils/EventManager.js"></script>
     <script type="text/javascript" src="src/display/UIDUtil.js"></script>
 </head>
 <body>
 <script>
+    //按钮事件测试
     var container, stage, context, events;
     var width = 800;
     var height = 480;
     var frames = 0;
     window.onload =  function(){
         container = DomUtil.query("#container");
-        events = ["mouseup"];
+        var events = ["mouseup"];
         var canvas = DomUtil.createDOM("canvas", {width:width, height:height, style:{position:"absolute",backgroundColor:"#fff"}});
         container.appendChild(canvas);
         context = new Quark.CanvasContext({canvas:canvas});
         stage = new Quark.Stage({width:width, height:height, context:context, update:tick});
-        img = new Image();
-        img.src = "img/winLose.png";
-        img.onload = handleImageLoad;
+        var bg = new Image();
+        bg.src = "img/winLose.png";
+        bg.onload = function(){
+            var bg_bitmap = new Q.Bitmap({id:"bg",image:bg});
+            bg_bitmap.x = 0;
+            bg_bitmap.y = 0;
+            stage.addChild(bg_bitmap);
+
+            img = new Image();
+            img.src = "img/button.png";
+            img.onload = handleImageLoad;
+        }
+        var offset = DomUtil.getElementOffset(canvas);
+        stage.updatePosition(offset);
+        var em = new Q.EventManager();
+        em.register(stage.context.canvas, events, function (e) {
+            var ne = (e.touches && e.touches.length > 0) ? e.touches[0]:
+                    (e.changedTouches && e.changedTouches.length > 0) ? e.changedTouches[0] : e;
+            var x = ne.pageX - stage.stageX, y = ne.pageY - stage.stageY;
+            var obj = stage.getObjectUnderPoint(x, y);
+            if (obj != null) {
+                if ((e.type == "touchstart" || e.type == "mousedown") && obj.onPress != null) {
+                    obj.onPress(ne);
+                    return;
+                }
+            }
+        }, true, true);
     }
     function handleImageLoad(event){
-        for(var i=0;i<50;i++){
-            var idx = Math.floor(Math.random() * 3);
-            var bitmap2 = new Q.Bitmap({id:"image",image:img,rect:[68*idx,0,68,68]});
-            bitmap2.x = Math.random() * 800;
-            bitmap2.y = Math.random() * 480;
-            stage.addChild(bitmap2);
-        }
+
+        var btn = new Q.Bitmap({id:"btn",image:img,rect:[0,0,145,57]});
+        btn.x = Math.random() * 700;
+        btn.y = Math.random() * 400;
+        stage.addChild(btn);
+
+        var btn2 = new Q.Bitmap({id:"btn2",image:img,rect:[0,0,145,57]});
+        btn2.x = Math.random() * 700;
+        btn2.y = Math.random() * 400;
+        stage.addChild(btn2);
+
+        var btn3 = new Q.Bitmap({id:"btn3",image:img,rect:[0,0,145,57]});
+        btn3.x = Math.random() * 700;
+        btn3.y = Math.random() * 400;
+        stage.addChild(btn3);
+
+
 
         Ticker.setFPS(20);
         Ticker.addListener(stage);
@@ -92,14 +90,6 @@
     }
 
     function tick(){
-        var n = stage.getNumChildren();
-        for(var i=0;i<n;i++){
-            var bitmap2 = stage.getChildAt(i);
-            bitmap2.x += 5;
-            if(bitmap2.x >=800) bitmap2.x = 0;
-            bitmap2.y += 5;
-            if(bitmap2.y >=480) bitmap2.y = 0;
-        }
         frames++;
     }
 
@@ -112,12 +102,8 @@
         }, 1000);
     }
 </script>
-<div id="outer">
-    <div id="middle">
-        <div id="container">
-        </div>
+    <div id="container" style="position:absolute;top:50px;left:80px;">
     </div>
-</div>
 <div id="fps" style="position:absolute;top:0;right:0;color:#fff;"></div>
 </body>
 </html>

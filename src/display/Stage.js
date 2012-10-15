@@ -143,4 +143,14 @@
         }
         if(leave || e.type != "mouseout") Stage.superClass._onEvent.call(this, e);
     };
+    /**
+     * 更新舞台Stage在页面中的偏移位置,主要用于事件派发时坐标计算
+     * @param {JSON} offset 左顶点坐标，在Dom模式下可以通过DomUtil.getElementOffset(canvas)方法得到
+     * 如果确定游戏时全屏（canvas的尺寸等于屏幕尺寸），可以忽略该方法
+     */
+    Stage.prototype.updatePosition = function(offset)
+    {
+        this.stageX = offset.left;
+        this.stageY = offset.top;
+    };
 })();

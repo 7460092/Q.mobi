@@ -222,7 +222,7 @@
      */
     DisplayObject.prototype.getConcatenatedMatrix = function(ancestor)
     {
-        var mtx = new Matrix2D(1, 0, 0, 1, 0, 0);
+        var mtx = new Q.Matrix2D(1, 0, 0, 1, 0, 0);
         if(ancestor == this) return mtx;
         var o = this;
         while (o != null) {

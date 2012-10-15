@@ -610,5 +610,5 @@
         point.y = y;
         return point;
     };
-    window.Matrix2D = Matrix2D;
+    Quark.Matrix2D = Matrix2D;
 }(window))
