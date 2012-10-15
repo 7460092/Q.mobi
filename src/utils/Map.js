@@ -112,5 +112,5 @@
     Map.prototype.hasKey = function(key){
         return this[key] != undefined;
     }
-	window.Map = Map;
+	Quark.Map = Map;
 })(window);

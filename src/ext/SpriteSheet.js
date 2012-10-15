@@ -26,11 +26,11 @@
         //是否完成
         this.isEnd = false;
 
-        var bitmapMap = new Map();
+        var bitmapMap = new Q.Map();
         var imgArr = imgLabel.split(",");
         var bitmapCache;
         for(var i=0; i < imgArr.length; i++){
-            bitmapCache = new BitmapCache(imgArr[i]);
+            bitmapCache = new Q.BitmapCache(imgArr[i]);
             bitmapCache.bitmapMap.each(function(key,value,index){
                 bitmapMap.put(key, value);
             });
@@ -39,14 +39,14 @@
     }
     /**
      * 设置帧数据并缓存第一帧
-     * @param {Array} data 小图逐帧动画数据
+     * @param {Object} data 小图逐帧动画数据,支持String和Array两种类型
      * data数组的每一个Item也是一个数组，每个小图用x,y,alpha,scale等描述小图的显示属性
      * @param {String} label 当前动画数据的标签
      * @param {Boolean} cacheAll 是否立即缓存所有帧动画
      */
-    SpriteSheet.prototype.setData = function(data,label,cacheAll){
-        this.framesData = data;
-        this.totalFrames = data.length;
+    SpriteSheet.prototype.setData = function(data,label,cacheAll){        
+        this.framesData = typeof(data) == "string" ? this.parseData(data) : data;
+        this.totalFrames = this.framesData.length;
         this.framesArr = [];
         this.count = 0;
         this.isEnd = false;
@@ -77,7 +77,7 @@
         }
     }
     /**
-     * 是否已经完全Cache
+     * 所有帧是否已经完全Cache
      */
     SpriteSheet.prototype.isCached = function(){
         return this.framesArr.length == this.totalFrames;
@@ -142,7 +142,7 @@
         var regX,regY;
         //已使用的元件
         var usedBitmaps = {},tempBitmap;
-        for(i = 0;i<children.length;i++){
+        for(i = 0; i < children.length; i++){
             element = children[i];
             tempBitmap = usedBitmaps[element.label];
             if(tempBitmap){
@@ -152,9 +152,9 @@
                 usedBitmaps[element.label] = bitmap;
             }
             if(bitmap instanceof Q.Bitmap){
-                bitmap.matrix = new Matrix2D(element.a, element.b, element.c, element.d, element.tx, element.ty);
+                bitmap.matrix = new Q.Matrix2D(element.a, element.b, element.c, element.d, element.tx, element.ty);
                 bitmap.matrix.regPoint(bitmap.regX,bitmap.regY);
-                rect = Matrix2D.getBoundsAfterTransformation(bitmap.width,bitmap.height,bitmap.matrix);
+                rect = Q.Matrix2D.getBoundsAfterTransformation(bitmap.width,bitmap.height,bitmap.matrix);
                 x = Math.min(rect[0],x) + 0.5 >> 0;
                 y = Math.min(rect[1],y) + 0.5 >> 0;
                 width = Math.max(rect[0] +rect[2],width) + 0.5 >> 0;
@@ -183,10 +183,33 @@
         //ctx.strokeRect(regX,regY-7,1,7);
         //explicitWidth 显示固定宽度，一般小于实际宽度
         bitmap = new Q.DisplayObject({id:"spriteSheet",regX:regX, regY:regY});
-        bitmap.matrix = new Matrix2D();
+        bitmap.matrix = new Q.Matrix2D();
         /////bitmap.matrix.regPoint(regX,regY);
         bitmap._cache = canvas;
         return bitmap;
     }
-    window.SpriteSheet = SpriteSheet;
+    /**
+     * 转换动画字符串数据
+     * @param aniStr
+     */
+    SpriteSheet.prototype.parseData = function(aniStr){
+        var names = ["label","alpha","a","b","c","d","tx","ty"];
+        var frames  = aniStr.split(":");
+        var allFrames = [];
+        for(var i = 0 ; i < frames.length ; i ++){
+            var frame = [];
+            var tiles = frames[i].split("|");
+            for(var j = 0 ; j <tiles.length ; j++ ){
+                var tiles_ = tiles[j].split(",");
+                var symbol = {};
+                for(var k = 0; k < tiles_.length; k++){
+                    symbol[names[k]] = Number(tiles_[k]);
+                }
+                frame.push(symbol);
+            }
+            allFrames.push(frame);
+        }
+        return allFrames;
+    }
+    Quark.SpriteSheet = SpriteSheet;
 })();

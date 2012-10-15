@@ -46,6 +46,7 @@
         this.drawable = null;
         this.parent = null;
         this.context = null;
+        this._cache = null;
 
         this._depth = 0;
         this._lastState = {};

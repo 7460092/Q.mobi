@@ -35,7 +35,10 @@
         }
         if(!this.loading) this._loadNext();
     };
-
+    /**
+     * 设置最大连接数
+     * @param {Number} value
+     */
     ImageLoader.prototype.setMaxConnections = function (value) {
         this._maxConnections = value;
     }

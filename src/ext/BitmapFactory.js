@@ -19,9 +19,9 @@
         props.eventEnabled = props.eventEnabled || false;
         var imageData = null;
         if(props.rect != undefined){
-            imageData = {image:this.getImage(props.src),rect:props.rect};
+            imageData = {image:BitmapFactory.getImage(props.src),rect:props.rect};
         }else{
-            imageData = props.imageData || this.getImageData(props.src,props.label);
+            imageData = props.imageData || BitmapFactory.getImageData(props.src,props.label);
         }
         if(props.center === true){
             props.regX  = Math.floor(imageData.rect[2]/2);
@@ -39,12 +39,16 @@
     BitmapFactory.createButton = function(props){
         props = props || {};
         props.eventEnabled = true;
-        return this.createBitmap(props);
+        return BitmapFactory.createBitmap(props);
     };
 
     BitmapFactory.createMovieClip = function(props){
 
     };
+    /**
+     * 插入图片资源
+     * @param {JSON} images 加载后的Image对象+图片标签名
+     */
     BitmapFactory.putImages = function(images){
         if(BitmapFactory.images == null)
         {
@@ -54,8 +58,12 @@
     }
     BitmapFactory.images = null;
     BitmapFactory.imgMap = null;
-    BitmapFactory.setImageData = function(data){
-        BitmapFactory.imgMap = data;
+    BitmapFactory.putImageData = function(data){
+        if(BitmapFactory.imgMap == null)
+        {
+            BitmapFactory.imgMap = new Q.Map();
+        }
+        BitmapFactory.imgMap.put(data);
     }
     /**
      * 根据资源ID获得Image对象
@@ -63,8 +71,8 @@
      * @return {Image} Image对象
      */
     BitmapFactory.getImage = function(id){
-        if(this.images !=null && this.images[id] != undefined){
-            return this.images[id].image;
+        if(BitmapFactory.images !=null && BitmapFactory.images[id] != undefined){
+            return BitmapFactory.images[id].image;
         }else{
             return null;
         }
@@ -77,7 +85,7 @@
      */
     BitmapFactory.getImageData = function(id,indexOrLabel){
         var props = {};
-        props.image = this.getImage(id);
+        props.image = BitmapFactory.getImage(id);
         //获得图片的扩展数据
         var framesData = BitmapFactory.imgMap.getValue(id);
         if(framesData === undefined || framesData === null || indexOrLabel === null || indexOrLabel === "" || indexOrLabel === "null"){
@@ -93,7 +101,7 @@
                 lastIdx = parseInt(item[1]);
                 if(indexOrLabel <= lastIdx)
                 {
-                    return this.getImageData(key,lastIdx);
+                    return BitmapFactory.getImageData(key,lastIdx);
                 }
             }
         }else if(dataType == "[object Array]") //imgMap.put("ss", [["0",0,0,112,24]]);
@@ -111,33 +119,6 @@
             }
         }
         return props;
-    }
-    /**
-     * 取得带灰度的图片,大图资源必须是等分的，奇数行为彩色图片，偶数行为灰色图片
-     * @param {String} id 图片资源名称
-     * @param {Number} index 图片序号
-     * @param {Boolean} isGray 是否灰色
-     */
-    BitmapFactory.getIndexImageData = function(id,index,isGray){
-        var framesData = BitmapFactory.imgMap.getValue(id);
-        var image = this.getImage(id);
-        //列数
-        var col = image.width / framesData.w;
-        var rect = {};
-        index -= 1;
-        if(index < col){
-            rect.x = framesData.w * index;
-            rect.y = 0;
-        }else{
-            var a = Math.floor(index / col);
-            var b = index % col;
-            rect.x = framesData.w * b;
-            rect.y = framesData.h * a * 2;
-        }
-        if(isGray === true){
-            rect.y += framesData.h;
-        }
-        return {image:image,rect:[rect.x,rect.y,framesData.w,framesData.h]};
     }
 
     /**
@@ -172,6 +153,10 @@
         }
         return rectArr;
     }
+    /**
+     * 验证Bitmap参数的有效性
+     * @param props
+     */
     var validateImageRect = function(props){
         if(props.rect == undefined) return true;
         var rect_w = props.rect[0] + props.rect[2];
@@ -182,5 +167,5 @@
         }
         return true;
     }
-    window.BitmapFactory = BitmapFactory;
+    Quark.BitmapFactory = BitmapFactory;
 })();

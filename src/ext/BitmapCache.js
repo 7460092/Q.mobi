@@ -22,11 +22,11 @@
      * 初始化图片资源，并还原缓存小图
      */
     BitmapCache.prototype.init = function(){
-        this.bitmapMap = new Map();
-        var image = BitmapFactory.getImage(this.imageSrc);
-        var framesData = BitmapFactory.imgMap.getValue(this.imageSrc);
+        this.bitmapMap = new Q.Map();
+        var image = Q.BitmapFactory.getImage(this.imageSrc);
+        var framesData = Q.BitmapFactory.imgMap.getValue(this.imageSrc);
         var bitmapProps,item,rect,regX,regY;
-        for(var i = 0;i<framesData.length;i++){
+        for(var i = 0; i < framesData.length; i++){
             item = framesData[i];
             if(this.labels == "all" || ArrayUtil.indexOf(this.labels,item[0]) != -1){
                 rect = [item[1],item[2],item[3],item[4]];
@@ -48,7 +48,7 @@
          return null;
          }
          return new Q.Bitmap(props);*/
-        //return this.bitmapMap.getValue(label);
+        return this.bitmapMap.getValue(label);
     }
-    window.BitmapCache = BitmapCache;
+    Quark.BitmapCache = BitmapCache;
 })();

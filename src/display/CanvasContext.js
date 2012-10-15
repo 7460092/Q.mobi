@@ -26,9 +26,6 @@
      */
     CanvasContext.prototype.draw = function(target)
     {
-        //ignore children drawing if the parent has a mask.
-        if(target.parent != null && target.parent.mask != null) return;
-
         if(target._cache != null)
         {
             if(target.rectWidth > 0 || target.rectHeight > 0){
@@ -37,16 +34,11 @@
             }else{
                 this.context.drawImage(target._cache, 0, 0);
             }
-        }else if(target instanceof Quark.Text)
-        {
-            //special drawing
+        }else if(target instanceof Quark.Text){
             target._draw(this.context);
-        }else
-        {
-            //normal draw
+        }else{
             var img = target.getDrawable(this);
-            if(img != null)
-            {
+            if(img != null){
                 arguments[0] = img;
                 this.context.drawImage.apply(this.context, arguments);
             }
