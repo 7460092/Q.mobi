@@ -73,6 +73,16 @@
     {
         return this._cache || this.drawable;
     };
+    /**
+     * 返回Matrix
+     */
+    DisplayObject.prototype.getMatrix = function(){
+        if(this.matrix == null){ //通过变形属性获得默认matrix
+            this.matrix = new Q.Matrix2D(1,0,0,1,0,0);
+            this.matrix.createBox(this.x, this.y, this.scaleX,this.rotation,this.regX,this.regY);
+        }
+        return this.matrix;
+    }
 
     /**
      * 对象数据更新接口，仅供框架内部或组件开发者使用。用户通常应该重写update方法。

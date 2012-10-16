@@ -28,6 +28,7 @@
     {
         if(target._cache != null)
         {
+            //rect部分显示
             if(target.rectWidth > 0 || target.rectHeight > 0){
                 arguments[0] = target._cache;
                 this.context.drawImage.apply(this.context, arguments);

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="MobileOptimized" content="width">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="no-cache">
+    <meta http-equiv="Expires" content="-1">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta id="screenOri" name="screen-orientation" content="landscape" />
+    <meta name="viewport">
+    <title>Q.mobi测试-Group</title>
+    <script type="text/javascript" src="src/display/Base.js"></script>
+    <script type="text/javascript" src="src/display/DisplayObject.js"></script>
+    <script type="text/javascript" src="src/display/DisplayObjectContainer.js"></script>
+    <script type="text/javascript" src="src/display/Stage.js"></script>
+    <script type="text/javascript" src="src/display/Group.js"></script>
+    <script type="text/javascript" src="src/display/CanvasContext.js"></script>
+    <script type="text/javascript" src="src/display/Bitmap.js"></script>
+    <script type="text/javascript" src="src/display/Text.js"></script>
+    <script type="text/javascript" src="src/utils/EventDispatcher.js"></script>
+    <script type="text/javascript" src="src/display/Matrix2D.js"></script>
+    <script type="text/javascript" src="src/display/ImageLoader.js"></script>
+    <script type="text/javascript" src="src/utils/DomUtil.js"></script>
+    <script type="text/javascript" src="src/utils/Ticker.js"></script>
+    <script type="text/javascript" src="src/utils/EventManager.js"></script>
+    <script type="text/javascript" src="src/display/UIDUtil.js"></script>
+    <script type="text/javascript" src="src/display/Rectangle.js"></script>
+    <script type="text/javascript" src="src/utils/Map.js"></script>
+    <script type="text/javascript" src="src/ext/BitmapCache.js"></script>
+    <script type="text/javascript" src="src/ext/BitmapFactory.js"></script>
+    <script type="text/javascript" src="src/ext/SpriteSheet.js"></script>
+</head>
+<body>
+<script>
+    //动画容器测试
+    var container, stage, context, events,spriteSheet,bitmap;
+    var width = 800;
+    var height = 480;
+    var frames = 0;
+    window.onload =  function(){
+        container = DomUtil.query("#container");
+        var canvas = DomUtil.createDOM("canvas", {width:width, height:height, style:{position:"absolute",backgroundColor:"#fff"}});
+        container.appendChild(canvas);
+        context = new Quark.CanvasContext({canvas:canvas});
+        stage = new Quark.Stage({width:width, height:height, context:context, update:tick});
+
+        var offset = DomUtil.getElementOffset(canvas);
+        stage.updatePosition(offset);
+        Ticker.setFPS(20);
+        Ticker.addListener(stage);
+        showFPS();
+        
+        var group = new Q.Group({id:"group"});
+        stage.addChild(group);
+
+        var loader = new Q.ImageLoader();
+        loader.addEventListener("loaded", function(e){
+            var progress = Math.round(e.target.getLoadedSize()/e.target.getTotalSize()*100);
+            console.log("当前进度为:"+progress);
+        });
+        loader.addEventListener("complete", function(e){
+            console.log("加载完成");
+            Q.BitmapFactory.putImages(e.images);
+            var bitmap = new Q.BitmapFactory.createBitmap({id:"btn",src:"hua",label:"3"});
+            bitmap.x = 10;
+            bitmap.y = 10;
+            group.addChild(bitmap);
+            group.scaleX = 6;
+        });
+
+        var asstes = [
+            {id:"button", size:8, src:"img/button.png"},
+            {id:"hua",size:21, src:"img/hua.png"},
+            {id:"winLose", size:1289, src:"img/winLose.png"}
+        ];
+        Q.BitmapFactory.imgMap = new Q.Map();
+        Q.BitmapFactory.imgMap.put("hua",[
+            ["1",112,0,13,11,0,0],
+            ["2",112,11,11,9,0,0],
+            ["9",0,59,67,38,0,0],
+            ["10",98,54,21,27,0,0],
+            ["11",67,67,13,28,0,0],
+            ["3",0,0,76,59,0,0],
+            ["4",76,0,36,27,7.05,9.5],
+            ["5",101,81,24,12,11.35,5.8],
+            ["6",80,81,21,17,-2.5,-1.9],
+            ["7",98,27,24,27,-2.8,-3.3],
+            ["8",76,27,22,40,-2.6,-5]]);
+        loader.load(asstes);
+    }
+
+    function tick(){
+        frames++;
+    }
+
+    function showFPS()
+    {
+        setInterval(function()
+        {
+            DomUtil.query("#fps").innerHTML = "FPS:" + frames;
+            frames = 0;
+        }, 1000);
+    }
+</script>
+    <div id="container" style="position:absolute;top:50px;left:80px;">
+    </div>
+<div id="fps" style="position:absolute;top:0;right:0;color:#fff;"></div>
+</body>
+</html>

@@ -361,12 +361,13 @@
      * @param tx 沿 x 轴向右平移（移动）的像素数。
      * @param ty 沿 y 轴向右平移（移动）的像素数。
      * @param scale  缩放系数
+     * @param rotation 旋转角度
      * @param regX  注册点X坐标
      * @param regY  注册点Y坐标
      * @param horizontal 是否水平翻转，默认为false
      * @param vertical 是否垂直翻转，默认为false
      */
-    p.createBox = function(tx,ty,scale,regX,regY,horizontal,vertical){
+    p.createBox = function(tx,ty,scale,regX,rotation,regY,horizontal,vertical){
         this.identity();
         var scaleX = scale;
         var scaleY = scale;
@@ -376,7 +377,7 @@
         if(vertical == true){
             scaleY *= -1;
         }
-        this.appendTransform(tx, ty, scaleX,scaleY,0,null,null,regX, regY);
+        this.appendTransform(tx, ty, scaleX,scaleY,rotation,null,null,regX, regY);
     }
 
     /**
@@ -506,6 +507,27 @@
         this.compositeOperation = this.compositeOperation || compositeOperation;
         return this;
     }
+    /**
+     * 将某个矩阵与当前矩阵连接，从而将这两个矩阵的几何效果有效地结合在一起。
+     * 在数学术语中，将两个矩阵连接起来与使用矩阵乘法将它们结合起来是相同的。
+     * @param {Matrix2D} mtx 要连接到源矩阵的矩阵
+     */
+    p.concat = function(mtx)
+    {
+        var a = this.a;
+        var c = this.c;
+        var tx = this.tx;
+        
+        var newMatrix = new Matrix2D(1,0,0,1,0,0);
+
+        newMatrix.a = a * mtx.a + this.b * mtx.c;
+        newMatrix.b = a * mtx.b + this.b * mtx.d;
+        newMatrix.c = c * mtx.a + this.d * mtx.c;
+        newMatrix.d = c * mtx.b + this.d * mtx.d;
+        newMatrix.tx = tx * mtx.a + this.ty * mtx.c + mtx.tx;
+        newMatrix.ty = tx * mtx.b + this.ty * mtx.d + mtx.ty;
+        return newMatrix;
+    };
 
     /**
      * Returns a clone of the Matrix2D instance.
