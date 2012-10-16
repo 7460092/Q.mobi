@@ -51,7 +51,7 @@
             this.removeChildAt(0);
         };
         this.addChild(this.bgLayer);
-        this.addChild(this.popChild);
+        if(this.popChild) this.addChild(this.popChild);
     };
     /**
      * 重写清除所有子元件方法

@@ -367,7 +367,7 @@
      * @param horizontal 是否水平翻转，默认为false
      * @param vertical 是否垂直翻转，默认为false
      */
-    p.createBox = function(tx,ty,scale,regX,rotation,regY,horizontal,vertical){
+    p.createBox = function(tx,ty,scale,rotation,regX,regY,horizontal,vertical){
         this.identity();
         var scaleX = scale;
         var scaleY = scale;
